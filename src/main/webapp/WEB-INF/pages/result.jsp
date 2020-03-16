@@ -14,10 +14,11 @@
 
     <p>Content for LuNiT configuration StructureTmp.xml</p>
     <hr/>
-    <textarea rows="3" cols="30">
+    <textarea rows="50" cols="100">
     这里是文本域中的文本 ... ... ... ...
         flsdfjldsj
         ljlj
+
     </textarea>
 
 </body>

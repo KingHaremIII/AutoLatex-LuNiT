@@ -17,10 +17,10 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URLEncoder;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
+
 import org.dom4j.io.SAXReader;
+import org.springframework.web.servlet.ModelAndView;
 
 /**
  * Created with IntelliJ IDEA.
@@ -40,8 +40,9 @@ public class FileServiceImpl implements FileService {
 
 
     @Override
-    public String upload(HttpServletRequest request, MultipartFile upload) {
+    public ModelAndView upload(HttpServletRequest request, MultipartFile upload) {
         System.out.println("uploading...");
+        ModelAndView mv = new ModelAndView();
 
         /*
         use fileupload to upload
@@ -82,10 +83,13 @@ public class FileServiceImpl implements FileService {
                     System.err.println("Error in FileServiceImpl: XMLer.reader");
                     throw  new RuntimeException();
                 }
+                // save paths and full filename for success.jsp
                 for (String s : paths) {
-                    System.out.println(s);
+                    mv.addObject("paths", paths);
                 }
-                // TODO put paths and full filename into container for success.jsp using
+                mv.addObject("filename", path+"/"+filename);
+                mv.addObject("length", paths.size());
+                mv.setViewName("success");
             } catch (DocumentException e) {
                 System.err.println("Not found Structure.xml! ");
                 throw  new RuntimeException();
@@ -93,7 +97,7 @@ public class FileServiceImpl implements FileService {
         } else {
             System.err.println("Can only accept Structure.xml");
         }
-        return "success";
+        return mv;
     }
 
     @Override
@@ -103,6 +107,4 @@ public class FileServiceImpl implements FileService {
 
         return "result";
     }
-
-
 }

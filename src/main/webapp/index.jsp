@@ -21,9 +21,6 @@
         <input type="file" name="upload" width="120px"><br/>
         <input type="submit" value="upload your Structure.xml">
     </form>
-    <form action="file/process" method="get">
-        <input type="submit" value="result">
-    </form>
 
 </body>
 </html>

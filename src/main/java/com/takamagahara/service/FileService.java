@@ -1,6 +1,7 @@
 package com.takamagahara.service;
 
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -19,7 +20,7 @@ public interface FileService {
      * @param upload
      * @return
      */
-    String upload(HttpServletRequest request, MultipartFile upload);
+    ModelAndView upload(HttpServletRequest request, MultipartFile upload);
 
     /**
      * collect selections in success.jsp, add unitTest attribute to sections and show the result for StructureTmp.xml

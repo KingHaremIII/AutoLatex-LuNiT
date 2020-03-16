@@ -24,4 +24,10 @@ public class OperatorEx {
             paths.add(sectionNode.getPath());
         }
     }
+
+    public void addUnitTest(SectionNode sectionNode, List<String> list) {
+        if (list.contains(sectionNode.getPath())) {
+            sectionNode.getElement().addAttribute("unitTest", "true");
+        }
+    }
 }
