@@ -5,7 +5,6 @@ import com.takamagahara.service.FileService;
 import com.takamagahara.xmler.Operator;
 import com.takamagahara.xmler.SectionNode;
 import com.takamagahara.xmler.XMLer;
-import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.Element;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,10 +12,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.lang.reflect.InvocationTargetException;
-import java.net.URLEncoder;
 import java.util.*;
 
 import org.dom4j.io.SAXReader;
@@ -84,9 +81,9 @@ public class FileServiceImpl implements FileService {
                     throw  new RuntimeException();
                 }
                 // save paths and full filename for success.jsp
-                for (String s : paths) {
-                    mv.addObject("paths", paths);
-                }
+//                for (String s : paths) {
+//                    mv.addObject("paths", paths);
+//                }
                 mv.addObject("filename", path+"/"+filename);
                 mv.addObject("length", paths.size());
                 mv.setViewName("success");
