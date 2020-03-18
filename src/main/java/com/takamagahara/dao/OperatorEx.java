@@ -15,12 +15,6 @@ import java.util.Map;
  * Time: 下午3:01
  */
 public class OperatorEx {
-//    public void addUnitTest(SectionNode sectionNode, Map<String, Boolean> paths) {
-//        if (paths.get(sectionNode.getPath())) {
-//            sectionNode.getElement().addAttribute("unitTest", "true");
-//        }
-//    }
-
     public void pathRecorderExcludingOthers(SectionNode sectionNode, List<String> paths) {
         if (sectionNode.getElement().getName().equals("section")) {
             paths.add(sectionNode.getPath());
@@ -31,6 +25,7 @@ public class OperatorEx {
         System.out.println("############Number: "+counter.toString());
         if (list.contains(counter.toString())) {
             sectionNode.getElement().addAttribute("unitTest", "true");
+            System.out.println("added: "+sectionNode.getElement().attributeValue("unitTest"));
         }
         counter.increment();
     }

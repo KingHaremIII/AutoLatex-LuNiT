@@ -24,16 +24,13 @@
     <button id="upload">transfer</button>
 
     <script>
-        // 页面加载，绑定单击事件
+        // page loading, bind event.
         $(function(){
             $("#upload").click(function(){
                 var text = $('#uploadText').val();
-
-                // alert("hello btn");
-                // 发送ajax请求
+                // transfer ajax
                 $.ajax({
-                    // 编写json格式，设置属性和值
-                    url:"file/ajaxTest",
+                    url:"file/upload",
                     contentType:"application/json;charset=UTF-8",
                     data:text,
                     dataType:"text",
@@ -72,17 +69,14 @@
                                 var filename = splieted[lenPaths];
                                 filename = filename.substring(1, filename.length-2);
                                 apiContentStr = apiContentStr+filename;
-                                // document.write(apiContentStr);
-                                // 发送ajax请求
+                                // transfer ajax
                                 $.ajax({
-                                    // 编写json格式，设置属性和值
-                                    url:"file/ajaxTest2",
+                                    url:"file/generate",
                                     contentType:"application/json;charset=UTF-8",
                                     data:apiContentStr,
                                     dataType:"text",
                                     type:"post",
                                     success:function(data){
-                                        // data服务器端响应的json的数据，进行解析
                                         // alert(data);
                                         document.write("<h2>Result</h2>");
                                         document.write(

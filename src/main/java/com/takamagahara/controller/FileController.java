@@ -2,7 +2,6 @@ package com.takamagahara.controller;
 
 import com.takamagahara.dao.OperatorEx;
 import com.takamagahara.domain.Counter;
-import com.takamagahara.service.FileService;
 import com.takamagahara.xmler.Operator;
 import com.takamagahara.xmler.SectionNode;
 import com.takamagahara.xmler.XMLer;
@@ -15,10 +14,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
-import javax.servlet.http.HttpServletRequest;
 import java.io.*;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
@@ -40,40 +37,14 @@ public class FileController {
     @Autowired
     OperatorEx operatorEx;
     @Autowired
-    FileService fileService;
-    @Autowired
     SAXReader saxReader;
     @Autowired
     Counter counter;
 
     @RequestMapping("/upload")
-    public ModelAndView upload(HttpServletRequest request, MultipartFile upload) {
-        return fileService.upload(request, upload);
-    }
-
-    @RequestMapping("/jump")
-    public String jump() {
-        return "redirect:/result.jsp";
-    }
-
-    @RequestMapping("/process")
-    public String Process() {// TODO parameters!!!
-//        return fileService.Process();
-        return "result";
-    }
-
-    @RequestMapping("/tmp")
-    public String test(HttpServletRequest request) {
-        System.out.println("=============="+request.getParameter("result"));
-        return "result";
-    }
-
-    @RequestMapping("/ajaxTest")
     public @ResponseBody
-    List<String> testAjax(@RequestBody String ajaxPathsList){
-        System.out.println("testAjax方法执行了...");
-        // 客户端发送ajax的请求，传的是json字符串，后端把json字符串封装到user对象中
-//        System.out.println(ajaxPathsList);
+    List<String> uploading(@RequestBody String ajaxPathsList){
+        System.out.println("uploading...");
 
         String uuid = UUID.randomUUID().toString().replace("-", "");
         String uFilename = uuid+"_Structure.xml";
@@ -111,11 +82,11 @@ public class FileController {
         return list;
     }
 
-    @RequestMapping("/ajaxTest2")
+    @RequestMapping("/generate")
     public @ResponseBody
-    String testAjax2(@RequestBody String ajaxPathsList){
-        System.out.println("testAjax2方法执行了...");
-        // 客户端发送ajax的请求，传的是json字符串，后端把json字符串封装到user对象中
+    String generate(@RequestBody String ajaxPathsList){
+        System.out.println("generating...");
+
         System.out.println(ajaxPathsList);
         String[] unitPaths = ajaxPathsList.split("/");
         List<String> selected = new ArrayList<>();
@@ -127,6 +98,7 @@ public class FileController {
 
         // acquire all nodes.
         Element root = null;
+        // save document for writing later
         Document document = null;
         try {
             document = saxReader.read(new File(unitPaths[i]));
@@ -134,13 +106,12 @@ public class FileController {
         } catch (DocumentException e) {
             e.printStackTrace();
         }
-        List<String> paths = pathsFromXML(root);
 
         // add unitTest attribute to selected nodes.
         try {
             XMLer.reader((new SectionNode(root, "Documents")), operatorEx,
                     OperatorEx.class.getMethod("addUnitTest", SectionNode.class, List.class, Counter.class),
-                    paths, counter);
+                    selected, counter);
         } catch (IllegalAccessException e) {
             e.printStackTrace();
         } catch (NoSuchMethodException e) {
@@ -151,9 +122,7 @@ public class FileController {
 
         XMLer.writer(document, unitPaths[i]);
 
-
         return readToString(unitPaths[i]);
-//        return "test last";
     }
 
     private List<String> pathsFromXML(Element root) {
@@ -218,18 +187,18 @@ public class FileController {
 //        return "<sections>\n\t<section>\n\t\n\t</section>\n</sections>";
 //    }
 
-    /**
-     * 使用关键字的方式进行转发或者重定向
-     * @return
-     */
-    @RequestMapping("/testForwardOrRedirect")
-    public String testForwardOrRedirect(){
-        System.out.println("testForwardOrRedirect方法执行了...");
-
-        // 请求的转发
-        // return "forward:/WEB-INF/pages/success.jsp";
-
-        // 重定向
-        return "redirect:/result.jsp";
-    }
+//    /**
+//     * 使用关键字的方式进行转发或者重定向
+//     * @return
+//     */
+//    @RequestMapping("/testForwardOrRedirect")
+//    public String testForwardOrRedirect(){
+//        System.out.println("testForwardOrRedirect方法执行了...");
+//
+//        // 请求的转发
+//        // return "forward:/WEB-INF/pages/success.jsp";
+//
+//        // 重定向
+//        return "redirect:/result.jsp";
+//    }
 }
