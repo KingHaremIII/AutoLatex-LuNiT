@@ -46,6 +46,7 @@
     <bean id="saxReader" class="org.dom4j.io.SAXReader"></bean>
     <bean id="operator" class="com.takamagahara.xmler.Operator"></bean>
     <bean id="operatorEx" class="com.takamagahara.dao.OperatorEx"></bean>
+    <bean id="counter" class="com.takamagahara.domain.Counter" scope="singleton"></bean>
 
     <!--配置Spring框架声明式事务管理-->
     <!--配置事务管理器-->

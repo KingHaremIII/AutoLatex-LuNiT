@@ -1,9 +1,12 @@
 package com.takamagahara.controller;
 
+import com.takamagahara.dao.OperatorEx;
+import com.takamagahara.domain.Counter;
 import com.takamagahara.service.FileService;
 import com.takamagahara.xmler.Operator;
 import com.takamagahara.xmler.SectionNode;
 import com.takamagahara.xmler.XMLer;
+import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
@@ -35,9 +38,13 @@ public class FileController {
     @Autowired
     Operator operator;
     @Autowired
+    OperatorEx operatorEx;
+    @Autowired
     FileService fileService;
     @Autowired
     SAXReader saxReader;
+    @Autowired
+    Counter counter;
 
     @RequestMapping("/upload")
     public ModelAndView upload(HttpServletRequest request, MultipartFile upload) {
@@ -89,16 +96,73 @@ public class FileController {
         Element root = null;
         try {
             root = saxReader.read(new File(uFilename)).getRootElement();
-            System.out.println(root.getName());
         } catch (DocumentException e) {
             e.printStackTrace();
         }
+        List<String> list = pathsFromXML(root);
 
-        List<String> list = new ArrayList<>();
+        list.add(uFilename);
+
+        System.out.println("******************candidates:");
+        for (String s : list) {
+            System.out.println(s);
+        }
+
+        return list;
+    }
+
+    @RequestMapping("/ajaxTest2")
+    public @ResponseBody
+    String testAjax2(@RequestBody String ajaxPathsList){
+        System.out.println("testAjax2方法执行了...");
+        // 客户端发送ajax的请求，传的是json字符串，后端把json字符串封装到user对象中
+        System.out.println(ajaxPathsList);
+        String[] unitPaths = ajaxPathsList.split("/");
+        List<String> selected = new ArrayList<>();
+        int i = 0;
+        for (;i<unitPaths.length-1;i++) {
+            selected.add(unitPaths[i]);
+            System.out.println("received......"+unitPaths[i]);
+        }
+
+        // acquire all nodes.
+        Element root = null;
+        Document document = null;
+        try {
+            document = saxReader.read(new File(unitPaths[i]));
+            root = document.getRootElement();
+        } catch (DocumentException e) {
+            e.printStackTrace();
+        }
+        List<String> paths = pathsFromXML(root);
+
+        // add unitTest attribute to selected nodes.
+        try {
+            XMLer.reader((new SectionNode(root, "Documents")), operatorEx,
+                    OperatorEx.class.getMethod("addUnitTest", SectionNode.class, List.class, Counter.class),
+                    paths, counter);
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        } catch (NoSuchMethodException e) {
+            e.printStackTrace();
+        } catch (InvocationTargetException e) {
+            e.printStackTrace();
+        }
+
+        XMLer.writer(document, unitPaths[i]);
+
+
+        return readToString(unitPaths[i]);
+//        return "test last";
+    }
+
+    private List<String> pathsFromXML(Element root) {
+
+        List<String> paths = new ArrayList<>();
         try {
             XMLer.reader((new SectionNode(root, "Documents")), operator,
                     Operator.class.getMethod("pathRecorder", SectionNode.class, List.class),
-                    list);
+                    paths);
         } catch (IllegalAccessException e) {
             e.printStackTrace();
         } catch (InvocationTargetException e) {
@@ -106,19 +170,31 @@ public class FileController {
         } catch (NoSuchMethodException e) {
             e.printStackTrace();
         }
-        return list;
+
+        return paths;
     }
 
-    @RequestMapping("/ajaxTest2")
-    public @ResponseBody
-    String testAjax2(@RequestBody String ajaxPathsList){
-        System.out.println("testAjax方法执行了...");
-        // 客户端发送ajax的请求，传的是json字符串，后端把json字符串封装到user对象中
-        System.out.println(ajaxPathsList);
-        String[] unitPaths = ajaxPathsList.split("$");
-        
-
-        return "<sections>\n\t<section>\n\t\n\t</section>\n</sections>";
+    private String readToString(String fileName) {
+        String encoding = "UTF-8";
+        File file = new File(fileName);
+        Long filelength = file.length();
+        byte[] filecontent = new byte[filelength.intValue()];
+        try {
+            FileInputStream in = new FileInputStream(file);
+            in.read(filecontent);
+            in.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        try {
+            return new String(filecontent, encoding);
+        } catch (UnsupportedEncodingException e) {
+            System.err.println("The OS does not support " + encoding);
+            e.printStackTrace();
+            return null;
+        }
     }
 
 //    @RequestMapping("/ajaxTest")

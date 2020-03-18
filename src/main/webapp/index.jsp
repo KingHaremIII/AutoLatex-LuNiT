@@ -39,12 +39,12 @@
                     dataType:"text",
                     type:"post",
                     success:function(paths){
-                        var lenPaths = paths.length;
-                        paths = paths.substring(1, lenPaths-1);
+                        paths = paths.substring(1, lenPaths);
                         var splieted = paths.split(",");
-                        for (let i=0;i<splieted.length;i++) {
+                        var lenPaths = splieted.length-1;
+                        for (let i=0;i<lenPaths;i++) {
                             var pathSingle = splieted[i].substring(1, splieted[i].length-1);
-                            document.write('<input type="checkbox" name="path" value='+pathSingle+'/>');
+                            document.write('<input type="checkbox" name="path" value='+i+'>');
                             document.write(pathSingle);
                             document.write('<br/>');
                             if ((i+1)%5 == 0) {
@@ -62,14 +62,16 @@
 
                                 for(var i=0;i<objArray;i++){
                                     if(box[i].checked == true){
-                                        apiContentStr += box[i].value+"$";
+                                        apiContentStr += box[i].value+"/";
                                     }
                                 }
                                 if(apiContentStr == "" || apiContentStr.length == 0){
                                     alert("You must select at least one section! ");
                                     return;
                                 }
-                                apiContentStr = apiContentStr+paths;
+                                var filename = splieted[lenPaths];
+                                filename = filename.substring(1, filename.length-2);
+                                apiContentStr = apiContentStr+filename;
                                 // document.write(apiContentStr);
                                 // 发送ajax请求
                                 $.ajax({
